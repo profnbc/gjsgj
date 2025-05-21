@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Typewriter from 'typewriter-effect';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Scene {
   id: number;
@@ -10,7 +11,7 @@ interface Scene {
   character: {
     image: string;
     position: 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
-    size: { // Ukuran ini sekarang untuk kontainer karakter
+    size: {
       width: string;
       height: string;
     };
@@ -184,25 +185,24 @@ const scenes: Scene[] = [
       }
     }
   }
-  
 ];
-
 
 const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
   const [currentScene, setCurrentScene] = useState(0);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [autoAdvance, setAutoAdvance] = useState(true);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (isTypingComplete && currentScene < scenes.length - 1) {
+    if (isTypingComplete && currentScene < scenes.length - 1 && autoAdvance) {
       timer = setTimeout(() => {
         setCurrentScene(prev => prev + 1);
         setIsTypingComplete(false);
       }, 5000);
     }
     return () => clearTimeout(timer);
-  }, [currentScene, isTypingComplete]);
+  }, [currentScene, isTypingComplete, autoAdvance]);
 
   const handleActivateProtocol = () => {
     setIsExiting(true);
@@ -211,13 +211,73 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
     }, 1000);
   };
 
+  const handlePrevScene = () => {
+    if (currentScene > 0) {
+      setAutoAdvance(false);
+      setCurrentScene(prev => prev - 1);
+      setIsTypingComplete(false);
+    }
+  };
+
+  const handleNextScene = () => {
+    if (currentScene < scenes.length - 1) {
+      setAutoAdvance(false);
+      setCurrentScene(prev => prev + 1);
+      setIsTypingComplete(false);
+    }
+  };
+
+  const NavigationArrow = ({ direction, onClick, disabled }: { direction: 'left' | 'right', onClick: () => void, disabled: boolean }) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`absolute top-1/2 -translate-y-1/2 ${direction === 'left' ? 'left-4' : 'right-4'} 
+                 z-50 w-12 h-12 rounded-full flex items-center justify-center
+                 border border-cyan-glow/30 bg-black/50 backdrop-blur-sm
+                 hover:border-cyan-glow hover:bg-cyan-glow/10 transition-all duration-300
+                 ${disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}
+    >
+      {direction === 'left' ? (
+        <ChevronLeft className="w-6 h-6 text-cyan-glow" />
+      ) : (
+        <ChevronRight className="w-6 h-6 text-cyan-glow" />
+      )}
+    </button>
+  );
+
   return (
     <motion.div 
       className="fixed inset-0 bg-black overflow-hidden"
       animate={isExiting ? { opacity: 0 } : { opacity: 1 }}
       transition={{ duration: 1 }}
     >
-      <div className="smoke-effect"></div> {/* Pastikan CSS untuk smoke-effect ada */}
+      <div className="smoke-effect"></div>
+      
+      {/* Navigation Arrows */}
+      <NavigationArrow
+        direction="left"
+        onClick={handlePrevScene}
+        disabled={currentScene === 0}
+      />
+      <NavigationArrow
+        direction="right"
+        onClick={handleNextScene}
+        disabled={currentScene === scenes.length - 1}
+      />
+      
+      {/* Scene Progress Indicator */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex gap-2">
+        {scenes.map((_, index) => (
+          <div
+            key={index}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              index === currentScene
+                ? 'bg-cyan-glow w-4'
+                : 'bg-cyan-glow/30'
+            }`}
+          />
+        ))}
+      </div>
       
       <AnimatePresence mode="wait">
         <motion.div
@@ -247,13 +307,14 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
             initial={scenes[currentScene].character.animation.initial}
             animate={scenes[currentScene].character.animation.animate}
             transition={{ duration: 1.5, ease: "easeOut" }}
-            // Tidak perlu style backgroundImage di sini lagi
           >
-            <img
-              src={scenes[currentScene].character.image}
-              className="h-full w-auto object-contain" // Ini kuncinya!
-              // Opacity & animasi lain sudah dihandle oleh motion.div parent
-            />
+            {scenes[currentScene].character.image && (
+              <img
+                src={scenes[currentScene].character.image}
+                className="h-full w-auto object-contain"
+                alt=""
+              />
+            )}
           </motion.div>
 
           {/* Content */}
@@ -274,7 +335,6 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
                           .pauseFor(1000)
                           .start();
                       });
-                      // Tidak perlu setIsTypingComplete di scene terakhir
                     }}
                     options={{
                       delay: 50,
@@ -286,7 +346,7 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
                 <motion.button
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: scenes[currentScene].text.join("").length * 0.05 }} // Estimasi delay setelah text selesai
+                  transition={{ delay: scenes[currentScene].text.join("").length * 0.05 }}
                   onClick={handleActivateProtocol}
                   className="px-8 py-4 bg-transparent border-2 border-cyan-glow text-cyan-glow 
                            font-orbitron text-xl rounded hover:bg-cyan-glow/20 
@@ -341,7 +401,6 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
           )}
 
           {/* Futuristic Corner Elements */}
-          {/* Pastikan elemen ini tidak menutupi konten penting atau bisa disesuaikan posisinya */}
           <div className="absolute top-4 left-4 w-16 h-16 md:w-32 md:h-32 border-l-2 border-t-2 border-cyan-glow/50 rounded-tl-lg"></div>
           <div className="absolute top-4 right-4 w-16 h-16 md:w-32 md:h-32 border-r-2 border-t-2 border-cyan-glow/50 rounded-tr-lg"></div>
           <div className="absolute bottom-4 left-4 w-16 h-16 md:w-32 md:h-32 border-l-2 border-b-2 border-cyan-glow/50 rounded-bl-lg"></div>

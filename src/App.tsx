@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import HeroSection from './components/sections/HeroSection';
@@ -10,10 +10,22 @@ import ParticleBackground from './components/ui/ParticleBackground';
 import StoryIntro from './components/story/StoryIntro';
 
 function App() {
-  const [introCompleted, setIntroCompleted] = useState(false);
+  const [introCompleted, setIntroCompleted] = useState(() => {
+    return localStorage.getItem('introCompleted') === 'true';
+  });
+
+  const handleIntroComplete = () => {
+    localStorage.setItem('introCompleted', 'true');
+    setIntroCompleted(true);
+  };
+
+  const resetIntro = () => {
+    localStorage.removeItem('introCompleted');
+    setIntroCompleted(false);
+  };
 
   if (!introCompleted) {
-    return <StoryIntro onComplete={() => setIntroCompleted(true)} />;
+    return <StoryIntro onComplete={handleIntroComplete} />;
   }
 
   return (
@@ -30,6 +42,14 @@ function App() {
           <JoinMissionSection />
         </main>
         <Footer />
+        
+        {/* Debug button to reset intro - you can remove this in production */}
+        <button
+          onClick={resetIntro}
+          className="fixed bottom-4 right-4 text-xs text-gray-500 hover:text-cyan-glow"
+        >
+          Reset Intro
+        </button>
       </div>
     </div>
   );
