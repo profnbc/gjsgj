@@ -320,13 +320,13 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
           {/* Content */}
           {currentScene === scenes.length - 1 ? (
             // Final Scene - Centered Content
-            <div className="relative z-10 h-full flex flex-col items-center justify-center p-8">
+            <div className="relative z-10 h-full flex flex-col items-center justify-center p-4 md:p-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="max-w-2xl text-center"
               >
-                <div className="text-2xl text-cyan-glow font-orbitron mb-12">
+                <div className="text-lg md:text-2xl text-cyan-glow font-orbitron mb-8 md:mb-12">
                   <Typewriter
                     onInit={(typewriter) => {
                       scenes[currentScene].text.forEach((line) => {
@@ -348,8 +348,8 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: scenes[currentScene].text.join("").length * 0.05 }}
                   onClick={handleActivateProtocol}
-                  className="px-8 py-4 bg-transparent border-2 border-cyan-glow text-cyan-glow 
-                           font-orbitron text-xl rounded hover:bg-cyan-glow/20 
+                  className="px-6 py-3 md:px-8 md:py-4 bg-transparent border-2 border-cyan-glow text-cyan-glow 
+                           font-orbitron text-base md:text-xl rounded hover:bg-cyan-glow/20 
                            transition-all duration-300 relative overflow-hidden
                            after:absolute after:inset-0 after:bg-cyan-glow/10 
                            after:opacity-0 hover:after:opacity-100 after:transition-opacity"
@@ -360,12 +360,12 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
             </div>
           ) : (
             // Regular Scenes
-            <div className="relative z-10 h-full flex flex-col justify-between p-8">
+            <div className="relative z-10 h-full flex flex-col justify-between p-4 md:p-8">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                className="text-white text-lg text-center"
+                className="text-white text-sm md:text-lg text-center"
               >
                 {scenes[currentScene].location}
               </motion.div>
@@ -373,9 +373,9 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className={`max-w-2xl ${scenes[currentScene].textPosition === 'right' ? 'ml-auto text-right' : 'mr-auto text-left'}`}
+                className={`max-w-2xl mx-auto ${scenes[currentScene].textPosition === 'right' ? 'text-right' : 'text-left'}`}
               >
-                <div className="text-2xl text-cyan-glow font-orbitron">
+                <div className="text-base md:text-2xl text-cyan-glow font-orbitron">
                   <Typewriter
                     onInit={(typewriter) => {
                       scenes[currentScene].text.forEach((line, index) => {
@@ -401,10 +401,10 @@ const StoryIntro: React.FC<StoryIntroProps> = ({ onComplete }) => {
           )}
 
           {/* Futuristic Corner Elements */}
-          <div className="absolute top-4 left-4 w-16 h-16 md:w-32 md:h-32 border-l-2 border-t-2 border-cyan-glow/50 rounded-tl-lg"></div>
-          <div className="absolute top-4 right-4 w-16 h-16 md:w-32 md:h-32 border-r-2 border-t-2 border-cyan-glow/50 rounded-tr-lg"></div>
-          <div className="absolute bottom-4 left-4 w-16 h-16 md:w-32 md:h-32 border-l-2 border-b-2 border-cyan-glow/50 rounded-bl-lg"></div>
-          <div className="absolute bottom-4 right-4 w-16 h-16 md:w-32 md:h-32 border-r-2 border-b-2 border-cyan-glow/50 rounded-br-lg"></div>
+          <div className="absolute top-4 left-4 w-12 h-12 md:w-32 md:h-32 border-l-2 border-t-2 border-cyan-glow/50 rounded-tl-lg"></div>
+          <div className="absolute top-4 right-4 w-12 h-12 md:w-32 md:h-32 border-r-2 border-t-2 border-cyan-glow/50 rounded-tr-lg"></div>
+          <div className="absolute bottom-4 left-4 w-12 h-12 md:w-32 md:h-32 border-l-2 border-b-2 border-cyan-glow/50 rounded-bl-lg"></div>
+          <div className="absolute bottom-4 right-4 w-12 h-12 md:w-32 md:h-32 border-r-2 border-b-2 border-cyan-glow/50 rounded-br-lg"></div>
         </motion.div>
       </AnimatePresence>
     </motion.div>
